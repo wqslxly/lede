@@ -1,15 +1,24 @@
 # 
-# <https://github.com/KFERMercer/OpenWrt-CI>
-#
+
+# This is free software, lisence use MIT.
+# 
 # Copyright (C) 2019 P3TERX
 #
 # Copyright (C) 2020 KFERMercer
 #
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+
 name: OpenWrt-CI
 
 on:
-  schedule:
-    - cron: 0 20 * * *
+  push:
+    branches: 
+      - master
+ # schedule:
+ #   - cron: 0 20 * * *
+ release:
+    types: [published]
 
 permissions:
   contents: read
@@ -22,7 +31,15 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    if: github.event.repository.owner.id == github.event.sender.id
+
     steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
       - name: Space cleanup and Initialization environment
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -39,6 +56,17 @@ jobs:
           sudo -E apt clean
           sudo -E timedatectl set-timezone "Asia/Shanghai"
 
+          # sudo mkdir -p -m 777 /mnt/openwrt/bin /mnt/openwrt/build_dir/host /mnt/openwrt/build_dir/hostpkg /mnt/openwrt/dl /mnt/openwrt/feeds /mnt/openwrt/staging_dir
+          # ln -s /mnt/openwrt/bin ./bin
+          # mkdir -p ./build_dir
+          # ln -s -f /mnt/openwrt/build_dir/host ./build_dir/host
+          # ln -s -f /mnt/openwrt/build_dir/hostpkg ./build_dir/hostpkg
+          # ln -s /mnt/openwrt/dl ./dl
+          # ln -s /mnt/openwrt/feeds ./feeds
+          # ln -s /mnt/openwrt/staging_dir ./staging_dir
+
+          df -h
+
       - name: Checkout OpenWrt
         uses: actions/checkout@v3
 
@@ -52,6 +80,7 @@ jobs:
         run: |
           rm -f ./.config*
           touch ./.config
+
           cat >> .config <<EOF
           #
           # ========================固件定制部分========================
@@ -114,6 +143,9 @@ jobs:
            CONFIG_PACKAGE_luci-app-ttyd=y
           CONFIG_PACKAGE_luci-app-udpxy=y
           CONFIG_PACKAGE_luci-app-ipsec-vpnd=m
+          CONFIG_PACKAGE——libcap-bin-capsh-shell="/bin/sh"
+          CONFIG_TARGET_KERNEL_PARTSIE=1024
+          CONFIG_TARGET_ROOTFS_PARTSIZE=10240
           #
           # ========================固件定制部分结束========================
           #
@@ -133,7 +165,10 @@ jobs:
           sed -i "10i uci commit network\n" ./package/lean/default-settings/files/zzz-default-settings
 
       - name: Download packages
-        run: make download -j16
+        run: |
+          make download -j8 || make download -j1 V=s
+          rm -rf $(find ./dl/ -size -1024c)
+          df -h
 
       - name: Compile firmware
         run: |
@@ -143,6 +178,8 @@ jobs:
           echo "======================="
           df -h
           echo "======================="
+          du -h ./ --max-depth=1
+          du -h /mnt/openwrt/ --max-depth=1 || true
           du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
           du -h --max-depth=1 ./build_dir
           du -h --max-depth=1 ./bin
@@ -172,3 +209,12 @@ jobs:
         with:
           name: OpenWrt_firmware
           path: ./bin/targets/
+
+     - name: Upload release asset
+        if: github.event == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.YOURTOKEN }}
+          file: ./artifact/firmware/*
+          tag: ${{ github.ref }}
+          file_glob: true
