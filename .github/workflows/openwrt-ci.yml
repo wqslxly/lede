@@ -40,8 +40,12 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           docker rmi `docker images -q`
-          sudo apt-get install lib32gcc-s1
+          sudo apt-get install libc6-i386
+          sudo apt-get install lib32stdc++6
           sudo apt-get install lib32gcc1
+          sudo apt-get install lib32ncurses5
+          sudo apt-get install lib32gcc-s1
+          sudo apt-get install gcc-multilib
           sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
           sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
           sudo -E apt-get update
