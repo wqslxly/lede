@@ -49,7 +49,94 @@ jobs:
           ./scripts/feeds install -a
 
       - name: Generate configuration file
-        run: make defconfig
+       - name: Generate configuration file
+        run: |
+          rm -f ./.config*
+          touch ./.config
+          cat >> .config <<EOF
+          #
+          # ========================固件定制部分========================
+          #
+          # 示例配置，下面是 diff.config 文件中的内容
+          CONFIG_TARGET_x86=y
+          CONFIG_TARGET_x86_64=y
+          CONFIG_TARGET_x86_64_DEVICE_generic=y
+          # CONFIG_PACKAGE_luci-app-accesscontrol is not set
+          # CONFIG_PACKAGE_luci-app-arpbind is not set
+          CONFIG_PACKAGE_luci-app-autoreboot=y
+          CONFIG_PACKAGE_luci-app-ddns=y
+          CONFIG_PACKAGE_luci-app-accesscontrol=y
+          CONFIG_PACKAGE_luci-app-arpbind=y
+          CONFIG_PACKAGE_luci-app-autoreboot=y
+          CONFIG_PACKAGE_luci-app-filetransfer=y
+          CONFIG_PACKAGE_luci-app-firewall=y
+          CONFIG_PACKAGE_luci-app-frpc=y
+          CONFIG_PACKAGE_luci-app-guest-wifi=y
+          CONFIG_PACKAGE_luci-app-nlbwmon=y
+          CONFIG_PACKAGE_luci-app-ramfree=y
+          CONFIG_PACKAGE_luci-app-samba=y
+          CONFIG_PACKAGE_luci-app-samba4=y
+          CONFIG_PACKAGE_luci-app-sfe=y
+          CONFIG_PACKAGE_luci-app-sqm=y
+          CONFIG_PACKAGE_luci-app-S-S R-plus=y
+          CONFIG_PACKAGE_luci-app-S-S R-plus ---> Include V2 ray=y
+          CONFIG_PACKAGE_luci-app-syncdial=y
+          CONFIG_PACKAGE_luci-app-upnp=y
+          CONFIG_PACKAGE_luci-app-vlmcsd=y
+          CONFIG_PACKAGE_luci-app-vsftpd=y
+          CONFIG_PACKAGE_luci-app-wifischedule=y
+          CONFIG_PACKAGE_luci-app-wireless-regdb=y
+          CONFIG_PACKAGE_luci-app-wol=y
+          CONFIG_PACKAGE_luci-app-wrtbwmon=y
+          CONFIG_PACKAGE_luci-app-xlnetacc=y
+          CONFIG_PACKAGE_luci-app-adblock=y
+          CONFIG_PACKAGE_luci-app-adbyby-plus=y
+          CONFIG_PACKAGE_luci-app-adbyby=y
+          CONFIG_PACKAGE_luci-app-adkill=y
+          CONFIG_PACKAGE_luci-app-adguardhome=y
+          CONFIG_PACKAGE_luci-app-clamav=y
+          CONFIG_PACKAGE_luci-app-koolproxy=y
+          CONFIG_PACKAGE_luci-app-simple-adblock=y
+          CONFIG_PACKAGE_luci-app-asterisk=y
+          CONFIG_PACKAGE_luci-app-attendedsysupgrade=y
+          CONFIG_PACKAGE_luci-app-commands=y
+          CONFIG_PACKAGE_luci-app-diag-core=y
+           CONFIG_PACKAGE_luci-app-dump1090=y
+          CONFIG_PACKAGE_luci-app-e2guardian=y
+          CONFIG_PACKAGE_luci-app-familycloud=y
+          CONFIG_PACKAGE_luci-app-flowoffload=y
+          CONFIG_PACKAGE_luci-app-gfwlist=y
+          CONFIG_PACKAGE_luci-app-hd-idle=y
+          CONFIG_PACKAGE_luci-app-hnet=y
+          CONFIG_PACKAGE_luci-app-kodexplorer=y
+          CONFIG_PACKAGE_luci-app-meshwizard=y
+          CONFIG_PACKAGE_luci-app-mmc-over-gpio=y
+          CONFIG_PACKAGE_luci-app-splash=y
+          CONFIG_PACKAGE_luci-app-travelmate=y
+           CONFIG_PACKAGE_luci-app-ttyd=y
+          CONFIG_PACKAGE_luci-app-udpxy=y
+          # CONFIG_PACKAGE_luci-app-filetransfer is not set
+          CONFIG_PACKAGE_luci-app-frpc=m
+          CONFIG_PACKAGE_luci-app-ipsec-vpnd=m
+          CONFIG_PACKAGE_luci-app-nlbwmon=m
+          CONFIG_PACKAGE_luci-app-ramfree=m
+          #
+          # ========================固件定制部分结束========================
+          #
+          EOF
+          sed -i 's/^[ \t]*//g' ./.config
+          make defconfig
+          # 网络配置信息，将从 zzz-default-settings 文件的第2行开始添加
+          sed -i "2i # network config" ./package/lean/default-settings/files/zzz-default-settings
+          # 默认 IP 地址，旁路由时不会和主路由的 192.168.1.1 冲突
+          sed -i "3i uci set network.lan.ipaddr='192.168.1.254'" ./package/lean/default-settings/files/zzz-default-settings
+          sed -i "4i uci set network.lan.proto='static'" ./package/lean/default-settings/files/zzz-default-settings # 静态 IP
+          sed -i "5i uci set network.lan.type='bridge'" ./package/lean/default-settings/files/zzz-default-settings  # 接口类型：桥接
+          sed -i "6i uci set network.lan.ifname='eth0'" ./package/lean/default-settings/files/zzz-default-settings  # 网络端口：默认 eth0，第一个接口
+          sed -i "7i uci set network.lan.netmask='255.255.255.0'" ./package/lean/default-settings/files/zzz-default-settings    # 子网掩码
+          sed -i "8i uci set network.lan.gateway='192.168.1.1'" ./package/lean/default-settings/files/zzz-default-settings  # 默认网关地址（主路由 IP）
+          sed -i "9i uci set network.lan.dns='192.168.1.1'" ./package/lean/default-settings/files/zzz-default-settings  # 默认上游 DNS 地址
+          sed -i "10i uci commit network\n" ./package/lean/default-settings/files/zzz-default-settings
 
       - name: Download packages
         run: make download -j16
