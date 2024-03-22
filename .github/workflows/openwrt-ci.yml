@@ -55,6 +55,7 @@ jobs:
           # ln -s /mnt/openwrt/dl ./dl
           # ln -s /mnt/openwrt/feeds ./feeds
           # ln -s /mnt/openwrt/staging_dir ./staging_dir
+          sudo apt-get install lib32gcc-s1
 
           df -h
 
