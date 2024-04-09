@@ -6,7 +6,6 @@
 # 
 # <https://github.com/KFERMercer/OpenWrt-CI>
 #
-
 name: 极渡苍洱
 
 on:
