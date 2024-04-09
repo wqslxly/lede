@@ -1,5 +1,6 @@
 name: 极渡苍洱
 
+no: |
  push:
   branches: 
    - master
