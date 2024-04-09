@@ -33,7 +33,6 @@ jobs:
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
-     
     - name: Clone source code
       working-directory: /workdir
       run: |
