@@ -14,16 +14,12 @@ on:
   schedule:
     - cron: 0 20 * * *
 
-
 permissions:
   contents: read
 
 jobs:
-
   build_openwrt:
-
     name: Build OpenWrt Firmware
-
     runs-on: ubuntu-latest
 
     steps:
