@@ -50,16 +50,6 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: 自定义插件
-      run: |
-        cd package
-        mkdir openwrt-package
-        cd openwrt-package
-        git clone https://github.com/kongfl888/luci-app-adguardhome.git
-        git clone https://github.com/byxkbyxk/luci-app-advancedsetting.git
-        git clone https://github.com/jefferymvp/luci-app-koolproxyR.git
-        git clone https://github.com/kenzok78/luci-app-fileassistant.git
-          
     - name: Clone source code
       working-directory: /workdir
       run: |
@@ -154,57 +144,6 @@ jobs:
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
         
-         # 常用LuCI插件选择:
-          cat >> .config <<EOF
-          CONFIG_PACKAGE_luci-app-accesscontrol=y
-          CONFIG_PACKAGE_luci-app-adblock=y
-          CONFIG_PACKAGE_luci-app-koolproxyR=y
-          CONFIG_PACKAGE_luci-app-adbyby-plus=y
-          CONFIG_PACKAGE_luci-app-adguardhome=y
-          CONFIG_PACKAGE_ luci-app-clamav=y
-          CONFIG_PACKAGE_luci-app-advanced-reboot=y
-          CONFIG_PACKAGE_luci-app-attendedsysupgrade=y
-          CONFIG_PACKAGE_luci-app-autoreboot=y
-          CONFIG_PACKAGE_luci-app-commands=y
-          CONFIG_PACKAGE_luci-app-aria2=y
-          CONFIG_PACKAGE_luci-app-advancedsetting=y
-          CONFIG_PACKAGE_luci-app-baidupcs-web=y
-          CONFIG_PACKAGE_luci-app-docker=y
-          CONFIG_PACKAGE_luci-app-diskman=y
-          CONFIG_PACKAGE_luci-app-easymesh=y
-          CONFIG_PACKAGE_luci-app-frpc=y
-          CONFIG_PACKAGE_luci-app-filetransfer=y
-          CONFIG_PACKAGE_luci-app-fileassistant=y
-          CONFIG_PACKAGE_luci-app-hd-idle=y
-          CONFIG_PACKAGE_luci-app-kodexplorer=y
-          CONFIG_PACKAGE_luci-app-minidlna=y
-          CONFIG_PACKAGE_luci-app-omcproxy=y
-          CONFIG_PACKAGE_luci-app-openvpn=y
-          CONFIG_PACKAGE_luci-app-openvpn-server=y
-          CONFIG_PACKAGE_luci-app-qbittorrent=y
-          CONFIG_PACKAGE_luci-app-p910nd=y
-          CONFIG_PACKAGE_luci-app-ramfree=y
-          CONFIG_PACKAGE_luci-app-rclone=y
-          CONFIG_PACKAGE_luci-app-“师夷长技以制夷”-plus=y
-          CONFIG_PACKAGE_luci-app-syncdial=y
-          CONFIG_PACKAGE_luci-app-travelmate=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Socks=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray=y
-          CONFIG_PACKAGE_luci-app-ttyd=y
-          CONFIG_PACKAGE_luci-app-unblockmusic=y
-          CONFIG_PACKAGE_luci-app-upnp=y
-          CONFIG_PACKAGE_luci-app-usb-printer=y
-          CONFIG_PACKAGE_luci-app-wirele“师夷长技以制夷”egdb=y
-          CONFIG_PACKAGE_luci-app-v2ray-server=y
-          CONFIG_PACKAGE_luci-app-verysync=y
-          CONFIG_PACKAGE_luci-app-webadmin=y
-          CONFIG_PACKAGE_luci-app-wireguard=y
-          CONFIG_PACKAGE_luci-app-wrtbwmon=y
-          EOF
-
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
       with:
