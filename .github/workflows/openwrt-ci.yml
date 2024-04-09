@@ -29,7 +29,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@main
-
     - name: Clone source code
       working-directory: /workdir
       run: |
