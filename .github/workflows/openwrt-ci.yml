@@ -23,8 +23,8 @@ no: |
   TZ: Asia/Shanghai
 
 jobs:
- build:
-  runs-on: ubuntu-22.04
+  build:
+   runs-on: ubuntu-22.04
   
   steps:
   - name: Checkout
