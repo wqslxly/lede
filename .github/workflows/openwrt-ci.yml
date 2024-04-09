@@ -59,14 +59,14 @@ jobs:
           sudo -E apt-get clean
 
       - name: 自定义插件
-         run: |
-           cd package
-           mkdir openwrt-package
-           cd openwrt-package
-           git clone https://github.com/kongfl888/luci-app-adguardhome.git
-           git clone https://github.com/byxkbyxk/luci-app-advancedsetting.git
-           git clone https://github.com/jefferymvp/luci-app-koolproxyR.git
-           git clone https://github.com/kenzok78/luci-app-fileassistant.git
+        run: |
+          cd package
+          mkdir openwrt-package
+          cd openwrt-package
+          git clone https://github.com/kongfl888/luci-app-adguardhome.git
+          git clone https://github.com/byxkbyxk/luci-app-advancedsetting.git
+          git clone https://github.com/jefferymvp/luci-app-koolproxyR.git
+          git clone https://github.com/kenzok78/luci-app-fileassistant.git
 
       - name: Update feeds
         run: |
