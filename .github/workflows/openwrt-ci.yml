@@ -1,32 +1,32 @@
-#
+# 
 # <https://github.com/KFERMercer/OpenWrt-CI>
 #
-#版权(C)2019P3TERX
+# Copyright (C) 2019 P3TERX
 #
-#版权(c)2020
+# Copyright (C) 2020 KFERMercer
 #
- 姓名 : 开放式的
+name: OpenWrt-CI
 
- 在…上 :
-  附表 :
-    - 克龙 :0 20 * * *
+on:
+  schedule:
+    - cron: 0 20 * * *
 
- 准许 :
-  目录 : 阅读
+permissions:
+  contents: read
 
- 乔布斯 :
+jobs:
 
-  建筑物 :
+  build_openwrt:
 
-    姓名 : 建立开放式固件
+    name: Build OpenWrt Firmware
 
-    逃跑 : 最新的
+    runs-on: ubuntu-latest
 
-    台阶 :
-      - 姓名 : 空间清理和初始化环境
-        环境 :
-          去正面 : 非互动的
-        跑 : |
+    steps:
+      - name: Space cleanup and Initialization environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
           docker rmi `docker images -q`
           sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
           sudo -E apt-mark hold grub-efi-amd64-signed
@@ -39,23 +39,23 @@
           sudo -E apt clean
           sudo -E timedatectl set-timezone "Asia/Shanghai"
 
-      - 姓名 : 结帐
-        使用 : 行动/结账@v3
+      - name: Checkout OpenWrt
+        uses: actions/checkout@v3
 
-      - 姓名 : 更新资料
-        跑 : |
-          Sed-我是/#sr-git直升机世界/sr-git直升机世界/g'。/供应品
-          ./脚本/资料更新-a
-          ./脚本/提要安装-a
+      - name: Update feeds
+        run: |
+          sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
 
-      - 姓名 : 生成配置文件
-        跑 : 使脱模
+      - name: Generate configuration file
+        run: make defconfig
 
-      - 姓名 : 下载软件包
-        跑 : 下载-J16
+      - name: Download packages
+        run: make download -j16
 
-      - 姓名 : 编译固件
-        跑 : |
+      - name: Compile firmware
+        run: |
           make -j$(nproc) || make -j1 V=s
           echo "======================="
           echo "Space usage:"
